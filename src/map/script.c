@@ -12289,13 +12289,23 @@ static BUILDIN(getmobdrops)
 	struct mob_db *monster = NULL;
 	struct script_data *data1 = script_getdata(st, 3);
 	struct script_data *data2 = NULL;
-	const char *varname1 = reference_getname(data1);
-	const char *varname2;
-	int varid1 = reference_getid(data1);
-	int varid2;
+	const char *varname1 = NULL;
+	const char *varname2 = NULL;
+	int varid1 = 0;
+	int varid2 = 0;
 	int num = 0;
 
-	if (!data_isreference(data1) || reference_toconstant(data1) || !is_int_variable(varname1)) {
+	if (!data_isreference(data1) || reference_toconstant(data1)) {
+		ShowError("buildin_getmobdrops: Target argument must be a variable\n");
+		script->reportdata(data1);
+		st->state = END;
+		return false;
+	}
+
+	varname1 = reference_getname(data1);
+	varid1 = reference_getid(data1);
+
+	if (!is_int_variable(varname1)) {
 		ShowError("buildin_getmobdrops: Target argument must be an integer variable\n");
 		script->reportdata(data1);
 		st->state = END;
@@ -12304,11 +12314,19 @@ static BUILDIN(getmobdrops)
 
 	if (script_hasdata(st, 4)) {
 		data2 = script_getdata(st, 4);
+
+		if (!data_isreference(data2) || reference_toconstant(data2)) {
+			ShowError("buildin_getmobdrops: Target argument must be a variable\n");
+			script->reportdata(data1);
+			st->state = END;
+			return false;
+		}
+		
 		varname2 = reference_getname(data2);
 		varid2 = reference_getid(data2);
 
-		if (data2 == NULL || !data_isreference(data2) || reference_toconstant(data2) || !is_int_variable(varname2)) {
-			ShowError("buildin_getmobdrops: 2nd target argument is either invalid or not an integer variable\n");
+		if (data2 == NULL || !is_int_variable(varname2)) {
+			ShowError("buildin_getmobdrops: 2nd target argument must be an integer variable\n");
 			script->reportdata(data2);
 			st->state = END;
 			return false;
