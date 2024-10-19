@@ -4345,13 +4345,13 @@ Example:
 
 	.@count = getmobdrops(.@mob_id, .@item, .@rate);
 	
-	if (.@count) {
+	if (.@count == 0) {
+		mes("No drops found.");
+	} else {
 		mes(getmonsterinfo(.@mob_id, MOB_NAME) + " - " + .@count + " drops found:");
 		for (.@i = 0; .@i < .@count; ++.@i) {
 			mes(.@item[.@i] + " (" + getitemname(.@item[.@i]) + ") " + .@rate[.@i]/100 + ((.@rate[.@i]%100 < 10) ? ".0":".") + .@rate[.@i]%100 + "%");
 		}
-	} else {
-		mes("No drops found.");
 	}
 	close();
 
